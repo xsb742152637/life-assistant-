@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xie.lifeassistant.model.core.menutree.dao.CoreMenuTreeInfoDao">
+    <!--表名-->
+    <sql id="tableName">core_menu_tree_info</sql>
+    <!--主键-->
+    <sql id="primaryKey">MENU_ID</sql>
+
+    <!-- 目的：为dao接口方法提供sql语句配置 -->
+    <select id="getMenuTree" resultType="java.util.HashMap" parameterType="java.lang.Boolean">
+        select a.MENU_ID,a.MENU_LEVEL,a.OUTLINE_LEVEL,a.TITLE,a.ICON,a.IS_SHOW,ui.CODE,ui.URL_ID,ui.URL,ui.PARAMETER
+        from core_menu_tree_info a left join core_menu_url_info ui on a.URL_ID=ui.URL_ID
+        <!--<if test="_parameter  != null" >-->
+        <if test="isShow != null" >
+            where a.IS_SHOW = #{isShow}
+        </if>
+        order by convert(REPLACE(a.OUTLINE_LEVEL,'.',''),SIGNED)
+    </select>
+
+    <select id="getMenuLevelByParLevel" resultType="Integer">
+        select max(a.MENU_LEVEL)
+        from core_menu_tree_info a
+        where left(a.OUTLINE_LEVEL,length(#{outlineLevel}))=#{outlineLevel} and length(a.OUTLINE_LEVEL)>length(#{outlineLevel})
+    </select>
+
+    <update id="moveChildren">
+        update core_menu_tree_info a
+        set a.OUTLINE_LEVEL=concat(#{newParen},a.MENU_LEVEL)
+        where left(a.OUTLINE_LEVEL,length(#{oldParen}))=#{oldParen} and length(a.OUTLINE_LEVEL)>length(#{oldParen})
+    </update>
+
+    <update id="updateAfterDelete">
+        update core_menu_tree_info d,(
+        select c.MENU_ID,c.OUTLINE_LEVEL,concat(c.beforNum,c.curLevel - 1,if(instr(c.other,'.') = 0,'',substring(c.other,instr(c.other,'.')))) newOL
+        from (
+        select b.MENU_ID,b.TITLE,b.MENU_LEVEL,b.OUTLINE_LEVEL,#{before} beforNum,
+        SUBSTRING(b.OUTLINE_LEVEL,length(#{before}) + 1) other,
+        if(
+	        instr(SUBSTRING(b.OUTLINE_LEVEL,length(#{before}) + 1),'.') = 0,
+	        SUBSTRING(b.OUTLINE_LEVEL,length(#{before}) + 1)
+	        ,
+	        SUBSTRING(SUBSTRING(b.OUTLINE_LEVEL,length(#{before}) + 1),1,instr(SUBSTRING(b.OUTLINE_LEVEL,length(#{before}) + 1),'.') - 1)
+        ) curLevel
+        from core_menu_tree_info b
+        where
+        left(b.OUTLINE_LEVEL,length(#{before})) = #{before}
+        ) c
+        where c.curLevel > #{after}
+        )e set d.MENU_LEVEL=SUBSTRING(REVERSE(e.newOL),1,INSTR(REVERSE(e.newOL),'.') - 1),
+        d.OUTLINE_LEVEL=e.newOL
+        where d.MENU_ID=e.MENU_ID
+    </update>
+
+</mapper>
+

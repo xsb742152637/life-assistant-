@@ -1,0 +1,18 @@
+路径：http://localhost:8070/swagger-ui.html
+
+字段说明
+    value：接口说明
+    httpMethod：接口请求方式(GET\HEAD\POST\PUT等)
+    response：接口返回参数类型
+
+
+@Api(value="")
+    用于class，表示这个类是swagger的资源
+
+@ApiOperation(value = "接口说明", httpMethod = "POST",response = Order.class)
+    用于方法；表示一个http请求的操作
+
+@ApiParam(name = "参数名", value = "参数说明", required = "是否必填")
+    用于方法，参数，字段说明；表示对参数的添加元数据（说明或是否必填等）
+
+@ApiIgnore()用于类或者方法上，可以不被swagger显示在页面上

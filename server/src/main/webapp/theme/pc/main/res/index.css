@@ -1,0 +1,26 @@
+.pc_logo{
+    width: 90px;
+    float: left;
+    margin-left: 25px;
+}
+.logo-text{
+    color: #009688;
+    font-weight: bolder;
+}
+.layui-layout-left .LAY_app_flexible{
+    display: inline-block;
+    padding: 12px 4px;
+    float: left;
+    margin-left: -10px;
+    margin-top: 5px;
+    background-color: #20222A;
+    color: #fff;
+}
+.layui-layout-left .layui-breadcrumb{
+    display: inline-block;
+    padding: 28px 0px 0px 10px;
+    float: left;
+}
+.layui-layout-left .layui-breadcrumb a{
+    cursor: default;
+}

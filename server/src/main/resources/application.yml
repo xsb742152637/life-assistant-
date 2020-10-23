@@ -1,0 +1,120 @@
+
+server:
+  port: 8070 #端口
+
+
+spring:
+  mvc:
+    view:
+      suffix: .html
+      prefix: /
+#    static-path-pattern: /static/**
+    pathmatch:
+      use-suffix-pattern: true #开启后缀匹配模式，controller中通过.do后缀访问
+  freemarker:
+    cache: false    #页面不加载缓存，修改即时生效
+  profiles:
+    include: base
+  thymeleaf:
+#    prefix: classpath:/templates/
+    mode: HTML
+    cache: false
+    servlet:
+      content-type: text/html
+    encoding: UTF-8
+
+  #数据源配置
+  datasource:
+    driver-class-name: com.mysql.jdbc.Driver  #数据库链接驱动
+    url: jdbc:mysql://localhost:3306/ssm-master?useUnicode=true&characterEncoding=utf-8&useSSL=false&serverTimezone=GMT%2B8 #url
+    username: root  #用户名
+    password: root  #密码
+    #连接池配置 查看数据监控 http://localhost:8070/druid
+    druid:
+          # 连接池的配置信息
+          # 初始化大小，最小，最大
+          initial-size: 5
+          min-idle: 5
+          maxActive: 20
+          # 配置获取连接等待超时的时间
+          maxWait: 60000
+          # 配置间隔多久才进行一次检测，检测需要关闭的空闲连接，单位是毫秒
+          timeBetweenEvictionRunsMillis: 60000
+          # 配置一个连接在池中最小生存的时间，单位是毫秒
+          minEvictableIdleTimeMillis: 300000
+          validationQuery: SELECT 1 FROM DUAL
+          testWhileIdle: true
+          testOnBorrow: false
+          testOnReturn: false
+          # 打开PSCache，并且指定每个连接上PSCache的大小
+          poolPreparedStatements: true
+          maxPoolPreparedStatementPerConnectionSize: 20
+          # 配置监控统计拦截的filters，去掉后监控界面sql无法统计，'wall'用于防火墙
+          # DruidFilterConfiguration
+          filter:
+            slf4j:
+              enabled: true
+            wall:
+              enabled: true
+            stat:
+              enabled: true
+          # 通过connectProperties属性来打开mergeSql功能；慢SQL记录
+          connectionProperties: druid.stat.mergeSql\=true;druid.stat.slowSqlMillis\=5000
+          # 配置DruidStatFilter
+          web-stat-filter:
+            enabled: true
+            url-pattern: "/*"
+            exclusions: "*.js,*.gif,*.jpg,*.bmp,*.png,*.css,*.ico,/druid/*"
+          # 配置DruidStatViewServlet
+          stat-view-servlet:
+            url-pattern: "/druid/*"
+            # IP白名单(没有配置或者为空，则允许所有访问)
+            # allow: 127.0.0.1,192.168.46.120
+            # IP黑名单 (存在共同时，deny优先于allow)
+            # deny: 192.168.46.121
+            #  禁用HTML页面上的“Reset All”功能
+            reset-enable: false
+            # 登录名
+            login-username: admin
+            # 登录密码
+            login-password: 123456
+
+#    Mybatis-plus配置内容
+mybatis-plus:
+  executor-type: batch #指定MyBatis 的执行器为批量执行所有的更新语句
+  typeEnumsPackage: com.baomidou.springboot.entity.enums # 支持统配符 * 或者 ; 分割
+  mapper-locations: classpath:com/xie/lifeassistant/model/**/dao/xml/*.xml,com/xie/lifeassistant/util/datamanage/GenericMapper.xml  #配置映射文件
+  type-aliases-package: com.xie.lifeassistant.model #配置实体类
+  configuration:
+    # 这个配置会将执行的sql打印出来，在开发或测试的时候可以用
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+    # 开启自动驼峰命名规则（camel case）映射
+    map-underscore-to-camel-case: true
+    #MyBatis 自动映射时未知列或未知属性处理策略：当作映射失败处理，并抛出异常和详细信息
+    auto-mapping-unknown-column-behavior: failing
+    #全局地开启或关闭配置文件中的所有映射器已经配置的任何缓存，默认为 true
+    cache-enabled: true
+  global-config:
+    #是否控制台 print mybatis-plus 的 LOGO
+    banner: true
+    #字段策略 0:"忽略判断",1:"非 NULL 判断"),2:"非空判断"
+    field-strategy: 2
+    #刷新mapper 调试神器
+    refresh-mapper: true
+    db-config:
+        #主键类型：AUTO(0, “数据库ID自增”),INPUT(1, “用户输入ID”),ID_WORKER(2, “全局唯一ID”),UUID(3, “全局唯一ID”),NONE(4, “该类型为未设置主键类型”),ID_WORKER_STR(5, “字符串全局唯一ID”);
+        id-type: INPUT
+        #全局逻辑删除字段值,优先在entity中找有注解@TableLogic的为逻辑删除字段
+        logic-delete-field: deleted
+        logic-delete-value: 1 # 逻辑已删除值(默认为 1)
+        logic-not-delete-value: 0 # 逻辑未删除值(默认为 0)
+
+shiro:
+  enabled: true
+  web.enabled: true
+  loginUrl: /theme/pc/login/index.html
+  successUrl: /theme/pc/main/index.html
+  unauthorizedUrl: /theme/pc/error/401.html
+  sessionManager:
+    sessionIdUrlRewritingEnabled: true
+    sessionIdCookieEnabled: true

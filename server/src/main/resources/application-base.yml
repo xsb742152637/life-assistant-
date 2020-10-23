@@ -1,0 +1,8 @@
+#系统基础信息
+basesetting:
+  name: 好管家 #系统名称
+  is-auto-login: false #是否自动登录
+
+#附件目录
+io:
+  file-storage: fileStorage

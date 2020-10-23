@@ -1,0 +1,3 @@
+1、首先ctrl+alt+s打开设置，在Build,Execution,Deployment中找到Compliler，勾选Build project automatically
+2、快捷键Ctrl + Shift + Alt + /,出现如下图所示界面，点击Registry…
+   勾选compiler.automake.allow.when.app.running后Close即可

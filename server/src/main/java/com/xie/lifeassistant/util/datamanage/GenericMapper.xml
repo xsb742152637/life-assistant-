@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="GenericMapper">
+
+    <!-- parameterType="String" -->
+    <sql id="findOne">select * from <include refid="tableName"/> where <include refid="primaryKey"/> = #{primaryId}</sql>
+    <sql id="findAll">select * from <include refid="tableName"/></sql>
+
+    <sql id="insert">
+        INSERT INTO <include refid="tableName"/> (<foreach collection="map.fields" index="key" item="value" separator=",">${value}</foreach>) VALUES
+        <foreach collection="map.list" item="item" separator=",">
+            (<foreach collection="item" item="value" separator=",">#{value}</foreach>)
+        </foreach>
+    </sql>
+
+    <sql id="update">
+        update <include refid="tableName"/>
+        <set>
+            <foreach collection="map.fields" item="name" separator=",">
+                ${name} = case <include refid="primaryKey"/>
+                <foreach collection="map.list" item="item">
+                    <foreach collection="item" index="key" item="val" >
+                        <if test="key == map.primaryKey"> when ${"'"}${val}${"'"} then </if><if test="key == name"> #{val} </if>
+                    </foreach>
+                </foreach>
+                end
+            </foreach>
+        </set>
+        where <include refid="primaryKey"/> in (<foreach collection="map.primaryIds" item="value" separator=",">#{value}</foreach>)
+    </sql>
+
+    <!-- parameterType="String" -->
+    <sql id="delete">delete from <include refid="tableName"/> where <include refid="primaryKey"/>=#{primaryId}</sql>
+
+    <!-- parameterType = "java.util.List" -->
+    <sql id="deleteByPrimaryIds">
+        delete from <include refid="tableName"/> where <include refid="primaryKey"/> in
+        <foreach collection="list"  item="item" open="(" separator="," close=")"  >
+            #{item}
+        </foreach>
+    </sql>
+    <sql id="deleteAll">delete from <include refid="tableName"/></sql>
+</mapper>
+
