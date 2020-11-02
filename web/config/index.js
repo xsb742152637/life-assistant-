@@ -10,7 +10,15 @@ module.exports = {
     // Paths
     assetsSubDirectory: 'static',
     assetsPublicPath: '/',
-    proxyTable: {},
+      proxyTable: {
+          '/rest': {   //类似于别名
+              target: 'http://localhost:8999',//请求的基本路径
+              changeOrigin: true,//是否跨域
+              pathRewrite: {
+                  '^/rest': ''//重写接口，‘’即代表本身，具体前台请求路径为/rest/version/testVue
+              }
+          }
+      },
 
     // Various Dev Server settings
     host: 'localhost', // can be overwritten by process.env.HOST
