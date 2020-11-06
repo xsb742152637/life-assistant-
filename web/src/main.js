@@ -5,6 +5,12 @@ import App from './App'
 import router from './router'
 import upperFirst from 'lodash/upperFirst'
 import camelCase from 'lodash/camelCase'
+import Axios from 'axios' // 请求
+
+Vue.prototype.$axios = Axios
+Axios.defaults.baseURL = '/api'
+Axios.defaults.headers.post['Content-Type'] = 'application/json'
+// Axios.defaults.withCredentials = true
 
 Vue.config.productionTip = false
 

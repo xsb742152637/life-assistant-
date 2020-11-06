@@ -10,19 +10,20 @@ module.exports = {
     // Paths
     assetsSubDirectory: 'static',
     assetsPublicPath: '/',
-      proxyTable: {
-          '/rest': {   //类似于别名
-              target: 'http://localhost:8999',//请求的基本路径
-              changeOrigin: true,//是否跨域
-              pathRewrite: {
-                  '^/rest': ''//重写接口，‘’即代表本身，具体前台请求路径为/rest/version/testVue
-              }
-          }
-      },
+    proxyTable: {
+        '/api': {
+            target: 'http://localhost:8070', // 你接口的域名
+            secure: false,      // 如果是https接口，需要配置这个参数
+            changeOrigin: true,     // 如果接口跨域，需要进行这个参数配置
+            pathRewrite: {        //重写接口地址
+                '^/api': '/'
+            }
+        }
+    },
 
     // Various Dev Server settings
     host: 'localhost', // can be overwritten by process.env.HOST
-    port: 8080, // can be overwritten by process.env.PORT, if port is in use, a free one will be determined
+    port: 8060, // can be overwritten by process.env.PORT, if port is in use, a free one will be determined
     autoOpenBrowser: false,
     errorOverlay: true,
     notifyOnErrors: true,
