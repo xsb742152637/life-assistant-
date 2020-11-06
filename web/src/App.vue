@@ -35,7 +35,8 @@ export default {
 }
 </script>
 
-<style>
+<style scoped lang="less">
+@import "./assets/style/index.less";
 
 html,body,#app{
     margin: 0px;
@@ -52,5 +53,6 @@ html,body,#app{
     flex: 1;
     position: relative;
     overflow: hidden;
+    color: @Color;
 }
 </style>
