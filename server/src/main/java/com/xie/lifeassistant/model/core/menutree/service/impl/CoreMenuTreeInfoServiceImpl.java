@@ -83,7 +83,9 @@ public class CoreMenuTreeInfoServiceImpl extends GenericServiceImpl<CoreMenuTree
             mapP.put(outlineLevel,map);
         }
 
-        listR.get(0).put("state","open");
+        if(listR.size() > 0){
+            listR.get(0).put("state","open");
+        }
         return listR;
     }
 
