@@ -1,7 +1,7 @@
 import Vue from "vue";
 import App from "./App.vue";
-import Router from "./router";
-import Store from "./store";
+import router from "./router";
+import store from "./store";
 import "@babel/polyfill"; // IE 兼容
 import upperFirst from "lodash/upperFirst";
 import camelCase from "lodash/camelCase";
@@ -56,7 +56,7 @@ requireComponent.keys().forEach(fileName => {
 });
 
 new Vue({
-	Router,
-	Store,
+	router,
+	store,
 	render: h => h(App)
 }).$mount("#app");

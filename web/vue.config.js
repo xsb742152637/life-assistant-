@@ -26,6 +26,7 @@ module.exports = {
       .set("@components", resolve("src/components"))
       .set("@plugins", resolve("src/plugins"))
       .set("@views", resolve("src/views"))
+      .set("@core", resolve("src/views/core"))
       .set("@router", resolve("src/router"))
       .set("@store", resolve("src/store"))
       .set("@utils", resolve("src/utils"));
@@ -73,9 +74,9 @@ module.exports = {
         // 向全局sass样式传入共享的全局变量, $src可以配置图片cdn前缀
         // 详情: https://cli.vuejs.org/guide/css.html#passing-options-to-pre-processor-loaders
         prependData: `
-        @import "@scss/variables.scss";
         @import "@scss/mixins.scss";
         @import "@scss/function.scss";
+        @import "@scss/variables.scss";
         $src: "${process.env.VUE_APP_OSS_SRC}";
         `
       }

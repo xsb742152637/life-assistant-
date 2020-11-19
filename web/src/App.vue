@@ -5,7 +5,6 @@
 		<!--<router-link to="/about">About</router-link>-->
 		<!--</div>-->
 		<!--<router-view />-->
-
 		<el-container>
 			<el-aside
 				width="200px"
@@ -92,5 +91,8 @@ body,
 .el-header {
 	line-height: 60px;
 	padding: 0;
+}
+.el-main {
+	padding: 10px !important;
 }
 </style>

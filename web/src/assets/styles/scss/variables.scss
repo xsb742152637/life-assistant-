@@ -2,13 +2,24 @@ $aa: blue;
 $Color:blue;
 
 
-//背景色
+// 最底层背景色
 $BackgroundColor: #f2f2f2;
 
-$BorderColor: #f6f6f6;
+// 边框颜色
+$BorderColor: #dcdfe6;
+// 边框颜色
+$BorderRadius: 2px;
 
 $FontSize: 14px;
 
 $BoxShadow: 0 1px 2px 0 rgba(0,0,0,.05);
 
 $MenuBackgroundColor: #11193c;
+
+.xie-panel{
+	border: 1px solid $BorderColor;
+	background-color: #fff;
+	border-radius: $BorderRadius;
+	padding: 10px;
+	@include xie-box-shadow;
+}
