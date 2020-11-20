@@ -56,6 +56,9 @@ public class CoreMenuTreeInfoServiceImpl extends GenericServiceImpl<CoreMenuTree
                 map.put("spread",true);
             }
             map.put("id",map.get("menuId"));
+            if(map.get("code") == null){
+                map.put("code", map.get("menuId"));
+            }
 
             //该菜单是否有权限
             boolean isHaveGuide = !needGuide;
