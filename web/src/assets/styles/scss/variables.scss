@@ -16,10 +16,12 @@ $BoxShadow: 0 1px 2px 0 rgba(0,0,0,.05);
 
 $MenuBackgroundColor: #11193c;
 
+$Padding: 10px;
+
 .xie-panel{
 	border: 1px solid $BorderColor;
 	background-color: #fff;
 	border-radius: $BorderRadius;
-	padding: 10px;
+	padding: $Padding;
 	@include xie-box-shadow;
 }

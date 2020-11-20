@@ -2,18 +2,18 @@
 	<div>
 		<template v-for="menu in menuData">
 			<template v-if="menu.children">
-				<el-submenu :index="menu.id" :key="menu.id">
+				<el-submenu :index="menu.code" :key="menu.code">
 					<template slot="title">
-						<i class="el-icon-message"></i>
+						<i :class="menu.icon"></i>
 						{{ menu.title }}
 					</template>
 					<LayoutMenuItem :menuData="menu.children"></LayoutMenuItem>
 				</el-submenu>
 			</template>
 			<template v-else>
-				<el-menu-item :index="menu.id" :key="menu.id">
-					<!--<router-link :to="{ name: menu.code }">{{ menu.title }}</router-link>-->
-					<span @click="clickMenuItem(menu)">{{ menu.title }}</span>
+				<el-menu-item :index="menu.code" :key="menu.code">
+					<i :class="menu.icon"></i>
+					<span>{{ menu.title }}</span>
 				</el-menu-item>
 			</template>
 		</template>
@@ -26,12 +26,6 @@ export default {
 	props: ["menuData"],
 	data() {
 		return {};
-	},
-	methods: {
-		clickMenuItem(menu) {
-			console.log(menu);
-			this.$router.push({ name: menu.code, params: { id: "1" } });
-		}
 	}
 };
 </script>

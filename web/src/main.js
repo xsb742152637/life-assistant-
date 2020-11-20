@@ -55,6 +55,19 @@ requireComponent.keys().forEach(fileName => {
 	);
 });
 
+router.beforeEach((to, from, next) => {
+	/*
+	路由发生变化修改页面title
+	to:router即将进入的路由对象
+	from:当前导航即将离开的路由
+	*/
+	if (to.meta.title) {
+		document.title = to.meta.title
+	}
+	// next:Function,进行管道中的一个钩子，如果执行完了，则导航的状态就是 confirmed （确认的）；否则为false，终止导航。
+	next()
+});
+
 new Vue({
 	router,
 	store,

@@ -1,23 +1,38 @@
 <template>
 	<div id="app">
-		<!--<div id="nav">-->
-		<!--<router-link to="/">Home</router-link> |-->
-		<!--<router-link to="/about">About</router-link>-->
-		<!--</div>-->
-		<!--<router-view />-->
 		<el-container>
 			<el-aside
 				width="200px"
 				style="background-color: rgb(238, 241, 246)"
 			>
-				<LayoutMenu />
+				<el-menu
+					router
+					:default-active="$route.path"
+					backgroundColor="#11193c"
+					textColor="#fff"
+					activeTextColor="#5E4AE0"
+				>
+					<LayoutMenuItem :menuData="menuData"></LayoutMenuItem>
+				</el-menu>
 			</el-aside>
 			<el-container>
 				<el-header style="text-align: right; font-size: 12px">
-					<LayoutHead />
+					<div class="layout layout-head">
+						<el-dropdown>
+							<i class="el-icon-setting" style="margin-right: 15px"></i>
+							<el-dropdown-menu slot="dropdown">
+								<el-dropdown-item>查看</el-dropdown-item>
+								<el-dropdown-item>新增</el-dropdown-item>
+								<el-dropdown-item>删除</el-dropdown-item>
+							</el-dropdown-menu>
+						</el-dropdown>
+						<span>王小虎</span>
+					</div>
 				</el-header>
 				<el-main>
-					<LayoutContent />
+					<div class="layout layout-content">
+						<router-view />
+					</div>
 				</el-main>
 			</el-container>
 		</el-container>
@@ -29,13 +44,24 @@ export default {
 	name: "App",
 	data() {
 		return {
-			api: process.env.VUE_APP_API
+			menuData: []
 		};
+	},
+	created() {
+		var that = this;
+		this.$api
+			.getMenuTreeList()
+			.then(data => {
+				that.menuData = data;
+			})
+			.catch(function(err) {
+				console.log(err);
+			});
 	},
 	mounted() {
 		// js代码中使用环境变量
-		console.log("BASE_URL: ", process.env.BASE_URL);
-		console.log("VUE_APP_API: ", process.env.VUE_APP_API);
+//		console.log("BASE_URL: ", process.env.BASE_URL);
+//		console.log("VUE_APP_API: ", process.env.VUE_APP_API);
 	}
 };
 </script>
@@ -94,5 +120,28 @@ body,
 }
 .el-main {
 	padding: 10px !important;
+}
+
+.layout-head {
+	position: fixed;
+	top: 0px;
+	background-color: $MenuBackgroundColor;
+	color: #fff;
+	flex: 1;
+	left: 0px;
+	right: 0px;
+	z-index: 5;
+	padding: 0px 15px;
+	@include xie-box-shadow;
+}
+.layout-content {
+	height: 800px;
+}
+.el-aside {
+	margin-top: 60px;
+}
+.el-menu {
+	width: 100%;
+	@include xie-box-shadow;
 }
 </style>

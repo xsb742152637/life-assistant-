@@ -21,7 +21,20 @@ const routes = [
 	{
 		path: "/memberinfo",
 		name: "MemberInfo",
+		meta: { title: "成员管理" },
 		component: () => import("@core/memberinfo/index.vue")
+	},
+	{
+		path: "/menuurl",
+		name: "MenuUrl",
+		meta: { title: "应用管理" },
+		component: () => import("@core/menuurl/index.vue")
+	},
+	{
+		path: "/iconfont",
+		name: "IconFont",
+		meta: { title: "字体图标" },
+		component: () => import("@core/iconfont/index.vue")
 	}
 ];
 
