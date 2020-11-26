@@ -48,7 +48,7 @@ export default {
 		};
 	},
 	created() {
-		var that = this;
+		let that = this;
 		this.$api
 			.getMenuTreeList()
 			.then(data => {
@@ -57,11 +57,12 @@ export default {
 			.catch(function(err) {
 				console.log(err);
 			});
+		this.$router.push({ name: "MenuUrl", params: { id: "1" } });
 	},
 	mounted() {
 		// js代码中使用环境变量
-//		console.log("BASE_URL: ", process.env.BASE_URL);
-//		console.log("VUE_APP_API: ", process.env.VUE_APP_API);
+		// console.log("BASE_URL: ", process.env.BASE_URL);
+		// console.log("VUE_APP_API: ", process.env.VUE_APP_API);
 	}
 };
 </script>

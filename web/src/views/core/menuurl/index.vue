@@ -1,6 +1,6 @@
 <template>
 	<div>
-		<Table :tableData="tableData"></Table>
+		<Table :tableData="tableData" @loadSuccess="loadSuccess"></Table>
 	</div>
 </template>
 
@@ -13,6 +13,8 @@ export default {
 	data() {
 		return {
 			tableData: {
+				getListApi: this.$api.getMenuUrlList,
+				deleteApi: this.$api.deleteMenuUrl,
 				tools: {
 					isSearch: true,
 					isAdd: true,
@@ -21,15 +23,15 @@ export default {
 				},
 				head: [
 					{
-						label: "日期",
-						prop: "data",
+						label: "编码",
+						prop: "code",
 						width: "180",
 						fixed: "left",
 						align: "left"
 					},
 					{
-						label: "姓名",
-						prop: "name",
+						label: "菜单名称",
+						prop: "title",
 						width: "180",
 						fixed: false,
 						align: "left"
@@ -40,19 +42,23 @@ export default {
 						align: "left"
 					}
 				],
-				currentPage: 1,
-				total: 100
+				pageSize: 10
 			}
 		};
 	},
 	methods: {
-		del(data) {
-			console.log("回调");
+		loadSuccess(data) {
+			console.log("加载成功");
 			console.log(data);
+		},
+		delete() {
+			console.log("删除");
 		}
 	},
 	mounted() {},
-	created() {}
+	created() {
+//		this.$mes.deleteLoadOpen();
+	}
 };
 </script>
 

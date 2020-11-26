@@ -9,12 +9,14 @@ import Element from "element-ui";
 import "element-ui/lib/theme-chalk/index.css";
 import "@styles/theme/index.css";
 import * as api from "@utils/request/api";
+import message from "@utils/message/index";
 
 Vue.use(Element);
 
 // 挂载环境变量中的配置信息，然后在js中使用$src 访问。
 Vue.prototype.$src = process.env.VUE_APP_PUBLIC_PATH;
 Vue.prototype.$api = api;
+Vue.prototype.$mes = message;
 
 Vue.config.productionTip = false;
 
@@ -62,10 +64,10 @@ router.beforeEach((to, from, next) => {
 	from:当前导航即将离开的路由
 	*/
 	if (to.meta.title) {
-		document.title = to.meta.title
+		document.title = to.meta.title;
 	}
 	// next:Function,进行管道中的一个钩子，如果执行完了，则导航的状态就是 confirmed （确认的）；否则为false，终止导航。
-	next()
+	next();
 });
 
 new Vue({

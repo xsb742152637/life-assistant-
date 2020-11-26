@@ -8,16 +8,10 @@
 			<div class="table-tools-right">
 				<!-- 使用： <template #right>bbb</template> -->
 				<slot name="right"></slot>
-				<el-button
-					type="info"
-					v-show="defaultTableData.tools.isSearch"
-				>
+				<el-button type="info" v-show="defaultTableData.tools.isSearch">
 					搜索
 				</el-button>
-				<el-button
-					type="success"
-					v-show="defaultTableData.tools.isAdd"
-				>
+				<el-button type="success" v-show="defaultTableData.tools.isAdd">
 					新增
 				</el-button>
 				<el-button
@@ -29,14 +23,14 @@
 				<el-button
 					type="danger"
 					v-show="defaultTableData.tools.isDelete"
-					@click="clickTableDelete"
+					@click="deleteData"
 				>
 					删除
 				</el-button>
 			</div>
 		</div>
 		<el-table
-			:data="tableData1"
+			:data="defaultTableData.data"
 			:max-height="defaultTableData.maxHeight"
 			:height="defaultTableData.height"
 			:highlight-current-row="defaultTableData.highlightCurrentRow"
@@ -47,10 +41,10 @@
 			style="width: 100%"
 			@row-click="handleRowClick"
 		>
-
 			<template v-for="row in defaultTableData.head">
 				<el-table-column
 					:label="row.label"
+					:key="row.prop"
 					:prop="row.prop"
 					:width="row.width"
 					:fixed="row.fixed"
@@ -93,14 +87,9 @@ export default {
 			}, // 表头默认属性
 			defaultTableData: {
 				primaryField: "", // 数据的主键字段名称
-				//
-				api: {
-					delete: null
-				},
-				//回调方法
-				callback: {
-					delete: null
-				},
+				getListApi: null,
+				deleteApi: null,
+				params: {},
 				//需要显示的工具按钮
 				tools: {
 					isSearch: false, //是否显示搜索按钮
@@ -109,137 +98,151 @@ export default {
 					isDelete: false // 是否显示删除按钮
 				},
 				head: [], // 表头
+				data: null, // 数据
 				maxHeight: 500, // 表格最大高度
-				height: 'auto', //
+				height: null, //
 				highlightCurrentRow: true, // 是否高亮当前行
 				showSummary: false, // 是否在表尾显示合计行
 
 				currentPage: 1, // 当前页数
-				pageSizes: [10, 25, 50, 100 , 1000], // 每页显示个数选择器的选项设置
+				pageSizes: [10, 25, 50, 100], // 每页显示个数选择器的选项设置
 				pageSize: 25, // 每页显示条目个数
-				total: 100 // 总条目数
-			},
-			tableData1: [
-				{
-				date: '2016-05-03',
-				name: '王小虎',
-				address: '上海市普陀区金沙江路 1518 弄'
-			}, {
-				date: '2016-05-02',
-				name: '王小虎',
-				address: '上海市普陀区金沙江路 1518 弄'
-			}, {
-				date: '2016-05-04',
-				name: '王小虎',
-				address: '上海市普陀区金沙江路 1518 弄'
-			}, {
-				date: '2016-05-01',
-				name: '王小虎',
-				address: '上海市普陀区金沙江路 1518 弄'
-			}, {
-				date: '2016-05-08',
-				name: '王小虎',
-				address: '上海市普陀区金沙江路 1518 弄'
-			}, {
-				date: '2016-05-06',
-				name: '王小虎',
-				address: '上海市普陀区金沙江路 1518 弄'
-			}, {
-				date: '2016-05-07',
-				name: '王小虎',
-				address: '上海市普陀区金沙江路 1518 弄'
-			}]
+				total: 0 // 总条目数
+			}
 		};
 	},
 	computed: {},
 	methods: {
 		handleSizeChange(val) {
+			let self = this;
 			console.log(`每页 ${val} 条`);
+			self.reLoad({ currentPage: val });
+			self.loadData();
 		},
 		handleCurrentChange(val) {
+			let self = this;
 			console.log(`当前页: ${val}`);
+			self.$set(self.defaultTableData, "currentPage", val);
+			self.reLoad({ currentPage: val });
+			self.loadData();
 		},
 		handleRowClick(val) {
 			this.multipleTable = val;
 			console.log(val);
 		},
-		clickTableDelete() {
-			let that = this;
-			if(!this.multipleTable){
-				this.$message({
-					type: 'warning',
-					message: '请选中一行数据'
+		deleteData() {
+			let self = this;
+			if (!this.multipleTable) {
+				self.$message({
+					type: "warning",
+					message: "请选中一行数据"
 				});
 				return;
 			}
 
-			this.$confirm('此操作将删除该数据, 是否继续?', '提示', {
-				confirmButtonText: '确定',
-				cancelButtonText: '取消',
-				type: 'danger'
-			}).then(() => {
-				if(that.defaultTableData.api.delete){ // 有删除api
-					that.defaultTableData.api.delete(that.multipleTable)
+			this.$confirm("此操作将删除该数据, 是否继续?", "提示", {
+				confirmButtonText: "确定",
+				cancelButtonText: "取消",
+				type: "danger"
+			})
+				.then(() => {
+					self.$mes.deleteLoadOpen();
+					self.defaultTableData
+						.deleteApi(self.multipleTable)
 						.then(rs => {
-							if (rs.error) {
-								this.$message.error(rs.msg);
-							}else{
-								this.$message({
-									type: 'success',
-									message: rs.msg
-								});
-								if (that.defaultTableData.callback.delete) {
-									that.defaultTableData.callback.delete(that.multipleTable);
+							self.$mes.loadClose(rs);
+							if (rs.error == 0) {
+								//如果当前页面只有一条数据且删除成功，页数减一
+								if (
+									self.defaultTableData.data &&
+									self.defaultTableData.data.length == 1
+								) {
+									self.defaultTableData.currentPage -= 1;
 								}
+								// 加载数据
+								self.loadData(self);
+								self.$emit("deleteSuccess", rs);
+							} else {
+								self.$emit("deleteError", rs);
 							}
 						})
 						.catch(function(err) {
-							this.$message.error("操作失败！");
+							self.$mes.loadClose(err);
+							self.$emit("deleteError", err);
 						});
-				} else if (that.defaultTableData.callback.delete) { // 有回调
-					that.defaultTableData.callback.delete(that.multipleTable);
-				} else {
-					that.$message.error("未获取到删除方法的API或回调，无法删除！");
-				}
-			}).catch(() => {
-				this.$message({
-					type: 'info',
-					message: '已取消删除'
+				})
+				.catch(() => {
+					console.log("已取消删除");
 				});
-			});
+		},
+		loadData() {
+			let self = this;
+			if (self.defaultTableData.getListApi) {
+				let params = self.defaultTableData.params;
+				if (!params) {
+					params = {};
+				}
+				params.page = self.defaultTableData.currentPage;
+				params.rows = self.defaultTableData.pageSize;
+
+				self.$mes.queryLoadOpen();
+				self.defaultTableData
+					.getListApi(params)
+					.then(rs => {
+						self.$mes.loadClose();
+						if (rs.error == 0) {
+							self.reLoad({ data: rs.data, total: rs.total });
+							self.$emit("loadSuccess", rs);
+						} else {
+							self.$emit("loadError", rs);
+						}
+					})
+					.catch(function(err) {
+						self.$mes.loadClose(err);
+						self.$emit("loadError", err);
+					});
+			}
+		},
+		reLoad(obj) {
+			this.defaultTableData = Object.assign(
+				[],
+				this.defaultTableData,
+				obj
+			);
 		}
 	},
 	mounted() {},
 	created() {
+		let self = this;
 		if (this.tableData) {
-			console.log(this.defaultTableData);
-			this.defaultTableData = Object.assign([], this.defaultTableData, this.tableData);
-			if(this.defaultTableData.head){
-				for( let i = 0 ; i < this.defaultTableData.head.length ; i++ ){
-					this.defaultTableData.head[i] = Object.assign({}, this.defHead, this.defaultTableData.head[i]);
+			this.reLoad(this.tableData);
+			if (this.defaultTableData.head) {
+				for (let i = 0; i < this.defaultTableData.head.length; i++) {
+					this.defaultTableData.head[i] = Object.assign(
+						{},
+						this.defHead,
+						this.defaultTableData.head[i]
+					);
 				}
 			}
-			console.log(this.defaultTableData);
+			self.loadData();
 		}
 	}
 };
 </script>
 
 <style scoped lang="scss">
-.el-table{
+.el-table {
 	margin-top: $Padding;
 	margin-bottom: $Padding;
 }
-.el-pagination{
+.el-pagination {
 	padding: 0px;
 }
-.table-tools{
+.table-tools {
 	display: flex;
 }
-.table-tools-left{
-
-}
-.table-tools-right{
+.table-tools-right {
 	flex: 1;
 	text-align: right;
 }
