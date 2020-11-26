@@ -22,9 +22,9 @@ public class GenericController<T> {
     public String getTable(IPage<T> page){
         Map<String, Object> table = new HashMap<String, Object>();
 
-        table.put("code", 0);
+        table.put("error", 0);
         table.put("msg", "查询成功");
-        table.put("count", page.getTotal());
+        table.put("total", page.getTotal());
         table.put("data", page.getRecords());
         JSONObject jsonObject = JSONObject.fromObject(table);
         return jsonObject.toString();
@@ -68,7 +68,7 @@ public class GenericController<T> {
         if(StringUtils.isBlank(msg)){
             msg="操作成功！";
         }
-        re.put("error", false);
+        re.put("error", 0);
         re.put("msg", msg);
         return re.toString();
     }
@@ -82,7 +82,7 @@ public class GenericController<T> {
         if(StringUtils.isBlank(msg)){
             msg="操作失败！";
         }
-        re.put("error", true);
+        re.put("error", 1);
         re.put("msg", msg);
         return re.toString();
     }
