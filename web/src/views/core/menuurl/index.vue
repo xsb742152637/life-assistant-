@@ -1,6 +1,11 @@
 <template>
 	<div>
-		<Table :tableData="tableData" @loadSuccess="loadSuccess"></Table>
+		<Table
+			:tableData="tableData"
+			@loadSuccess="loadSuccess"
+			@loadError="loadError"
+			@deleteSuccess="deleteSuccess"
+		></Table>
 	</div>
 </template>
 
@@ -47,18 +52,21 @@ export default {
 		};
 	},
 	methods: {
-		loadSuccess(data) {
+		loadSuccess(rs) {
 			console.log("加载成功");
-			console.log(data);
+			console.log(rs);
 		},
-		delete() {
+		loadError(rs) {
+			console.log("加载失败");
+			console.log(rs);
+		},
+		deleteSuccess(rs) {
 			console.log("删除");
+			console.log(rs);
 		}
 	},
 	mounted() {},
-	created() {
-//		this.$mes.deleteLoadOpen();
-	}
+	created() {}
 };
 </script>
 

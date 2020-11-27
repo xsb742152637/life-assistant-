@@ -35,7 +35,6 @@ requireComponent.keys().forEach(fileName => {
 	// 获取组件配置
 	const componentConfig = requireComponent(fileName);
 
-	console.log(requireComponent);
 	// 获取组件的 PascalCase 命名
 	const componentName = upperFirst(
 		camelCase(

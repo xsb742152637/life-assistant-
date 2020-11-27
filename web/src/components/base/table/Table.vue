@@ -73,6 +73,14 @@
 	</div>
 </template>
 
+<!--
+完成后事件:
+	loadSuccess：加载成功
+	loadError：加载失败
+	deleteSuccess：删除成功
+	deleteError：删除失败
+-->
+
 <script scoped>
 export default {
 	name: "Table",
@@ -98,7 +106,7 @@ export default {
 					isDelete: false // 是否显示删除按钮
 				},
 				head: [], // 表头
-				data: null, // 数据
+				data: [], // 数据
 				maxHeight: 500, // 表格最大高度
 				height: null, //
 				highlightCurrentRow: true, // 是否高亮当前行
@@ -115,20 +123,18 @@ export default {
 	methods: {
 		handleSizeChange(val) {
 			let self = this;
-			console.log(`每页 ${val} 条`);
 			self.reLoad({ currentPage: val });
 			self.loadData();
 		},
 		handleCurrentChange(val) {
 			let self = this;
-			console.log(`当前页: ${val}`);
 			self.$set(self.defaultTableData, "currentPage", val);
 			self.reLoad({ currentPage: val });
 			self.loadData();
 		},
 		handleRowClick(val) {
+			// 选中一行
 			this.multipleTable = val;
-			console.log(val);
 		},
 		deleteData() {
 			let self = this;
@@ -198,7 +204,7 @@ export default {
 						}
 					})
 					.catch(function(err) {
-						self.$mes.loadClose(err);
+						self.$mes.loadClose();
 						self.$emit("loadError", err);
 					});
 			}

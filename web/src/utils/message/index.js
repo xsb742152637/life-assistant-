@@ -1,12 +1,12 @@
 import { Message, Loading } from "element-ui";
-
+var msgDuration = 2500;
 var loadEntity;
 export default {
 	success(text) {
 		Message({
 			showClose: true,
 			type: "success",
-			duration: 2000,
+			duration: msgDuration,
 			dangerouslyUseHTMLString: true,
 			message: text
 		});
@@ -15,7 +15,7 @@ export default {
 		Message({
 			showClose: true,
 			type: "warning",
-			duration: 2000,
+			duration: msgDuration,
 			dangerouslyUseHTMLString: true,
 			message: text
 		});
@@ -24,7 +24,7 @@ export default {
 		Message({
 			showClose: true,
 			type: "error",
-			duration: 2000,
+			duration: msgDuration,
 			dangerouslyUseHTMLString: true,
 			message: text
 		});
@@ -47,6 +47,8 @@ export default {
 				this.success(rs.msg);
 			} else if (rs.error == 1) {
 				this.error(rs.msg);
+			} else if (rs.message) {
+				this.warning(rs.message);
 			} else {
 				this.warning(JSON.stringify(rs));
 			}
