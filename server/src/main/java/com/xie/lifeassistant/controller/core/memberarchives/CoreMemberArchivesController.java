@@ -45,20 +45,47 @@ public class CoreMemberArchivesController extends GenericController<CoreMemberAr
                          @ApiParam(name="text",value="图片内容文字，如果只传入该参数，则表示临时生成一个图片") @RequestParam String text,
                          HttpServletResponse response){
 
+        response.setContentType("image/png");
         if(StringUtils.isBlank(memberId) && StringUtils.isBlank(text)){
             //memberId = Context.getMember().getMemberId().toString();
             memberId = "22222222-2222-2222-2222-222222222222";
         }
         BufferedImage image = service.getPhoto(memberId,text);
         if(image!=null){
+            OutputStream sos = null;
             try{
-                OutputStream sos = response.getOutputStream();
+                sos = response.getOutputStream();
                 JPEGImageEncoder encoder = JPEGCodec.createJPEGEncoder(sos);
                 encoder.encode(image);
             }catch (Exception e){
                 e.printStackTrace();
+            }finally {
+                try{
+                    if(sos != null){
+                        sos.flush();
+                        sos.close();
+                    }
+                }catch (Exception e){
+
+                }
             }
         }
+    }
+
+    @RequestMapping("getPhotoByBase64")
+    @ApiOperation(value = "获取成员头像图片", httpMethod = "POST")
+    public String getPhotoByBase64(@ApiParam(name="memberId",value="成员ID") @RequestParam String memberId,
+                           @ApiParam(name="text",value="图片内容文字，如果只传入该参数，则表示临时生成一个图片") @RequestParam String text,
+                           HttpServletResponse response){
+
+        if(StringUtils.isBlank(memberId) && StringUtils.isBlank(text)){
+            memberId = "22222222-2222-2222-2222-222222222222";
+        }
+        BufferedImage image = service.getPhoto(memberId,text);
+        if(image!=null){
+            return Util.BlobAndImage.getBase64(Util.BlobAndImage.getBlob(image));
+        }
+        return "";
     }
 
     @RequestMapping("save")
