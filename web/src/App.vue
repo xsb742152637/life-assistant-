@@ -19,7 +19,9 @@
 				<el-header style="text-align: right; font-size: 12px">
 					<div class="layout layout-head">
 						<div class="layout-head-left">
-							<img src="@assets/logo.png" height="60"/>
+							<a href="/">
+								<img src="@assets/logo.png" height="60"/>
+							</a>
 						</div>
 						<div class="layout-head-center"></div>
 						<div class="layout-head-right">
