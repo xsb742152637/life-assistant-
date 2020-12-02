@@ -18,19 +18,26 @@
 			<el-container>
 				<el-header style="text-align: right; font-size: 12px">
 					<div class="layout layout-head">
-						<el-dropdown>
-							<i class="el-icon-setting" style="margin-right: 15px"></i>
-							<el-dropdown-menu slot="dropdown">
-								<el-dropdown-item>查看</el-dropdown-item>
-								<el-dropdown-item>新增</el-dropdown-item>
-								<el-dropdown-item>删除</el-dropdown-item>
-							</el-dropdown-menu>
-						</el-dropdown>
-						<el-avatar :size="20">
-							<img :src="memberPhoto"/>
-							<!--<img :src="memberPhoto" src="https://cube.elemecdn.com/e/fd/0fc7d20532fdaf769a25683617711png.png"/>-->
-						</el-avatar>
-						<span>小谢</span>
+						<div class="layout-head-left">
+							<img src="@assets/logo.png" height="60"/>
+						</div>
+						<div class="layout-head-center"></div>
+						<div class="layout-head-right">
+							<div>
+								<img :src="memberPhoto" height="30"/>
+							</div>
+							<el-dropdown>
+								<span class="el-dropdown-link">
+									小谢
+									<i class="el-icon-arrow-down" style="margin-left: 3px;"></i>
+								</span>
+								<el-dropdown-menu slot="dropdown">
+									<el-dropdown-item>个人信息</el-dropdown-item>
+									<el-dropdown-item disabled>修改密码</el-dropdown-item>
+									<el-dropdown-item divided><span style="color: red;">退出</span></el-dropdown-item>
+								</el-dropdown-menu>
+							</el-dropdown>
+						</div>
 					</div>
 				</el-header>
 				<el-main>
@@ -167,6 +174,32 @@ body,
 	z-index: 5;
 	padding: 0px 15px;
 	@include xie-box-shadow;
+	display: flex;
+}
+.layout-head-left{
+	width: 180px;
+	height: 60px;
+	text-align: left;
+}
+.layout-head-center{
+	flex: 1;
+}
+.layout-head-right{
+	width: 300px;
+	display: flex;
+	justify-content: flex-end;
+	align-items: center;
+}
+.layout-head-right>div:first-child{
+	display: inherit;
+	margin-right: $Padding;
+}
+.layout-head-right img{
+	border-radius: $BorderRadius;
+}
+.el-dropdown{
+	color: #fff !important;
+	cursor: pointer;
 }
 .layout-content {
 	height: 800px;
