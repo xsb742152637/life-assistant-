@@ -8,25 +8,61 @@
 			<div class="table-tools-right">
 				<!-- 使用： <template #right>bbb</template> -->
 				<slot name="right"></slot>
-				<el-button type="info" v-show="defaultTableData.tools.isSearch">
-					搜索
-				</el-button>
-				<el-button type="success" v-show="defaultTableData.tools.isAdd">
-					新增
-				</el-button>
-				<el-button
-					type="warning"
-					v-show="defaultTableData.tools.isEdit"
-				>
-					修改
-				</el-button>
-				<el-button
-					type="danger"
-					v-show="defaultTableData.tools.isDelete"
-					@click="deleteData"
-				>
-					删除
-				</el-button>
+				<el-tooltip content="搜索" placement="top" :disabled="!onlyIcon">
+					<el-button
+						type="primary"
+						icon="el-icon-search"
+						:size="buttonSize"
+						:loading="loading"
+						:disabled="disabled"
+						v-show="defaultTableData.tools.isSearch"
+						@click="searchDialog = true"
+					>
+						{{searchText}}
+					</el-button>
+				</el-tooltip>
+
+				<el-tooltip content="新增" placement="top" :disabled="!onlyIcon">
+					<el-button
+						type="success"
+						icon="el-icon-plus"
+						:size="buttonSize"
+						:loading="loading"
+						:disabled="disabled"
+						v-show="defaultTableData.tools.isAdd"
+						@click="saveShow(true)"
+					>
+						{{addText}}
+					</el-button>
+				</el-tooltip>
+				<el-tooltip content="修改" placement="top" :disabled="!onlyIcon">
+					<el-button
+						type="warning"
+						icon="el-icon-edit"
+						:size="buttonSize"
+						:loading="loading"
+						:disabled="disabled"
+						v-show="defaultTableData.tools.isEdit"
+						@click="saveShow(false)"
+					>
+						{{editText}}
+					</el-button>
+				</el-tooltip>
+
+				<el-tooltip content="删除" placement="top" :disabled="!onlyIcon">
+					<el-button
+						type="danger"
+						icon="el-icon-delete"
+						:size="buttonSize"
+						:loading="loading"
+						:disabled="disabled"
+						v-show="defaultTableData.tools.isDelete"
+						@click="deleteData"
+					>
+						{{deleteText}}
+					</el-button>
+				</el-tooltip>
+
 			</div>
 		</div>
 		<el-table
@@ -51,6 +87,7 @@
 					:header-align="row.headerAlign"
 					:align="row.align"
 					:show-overflow-tooltip="row.showOverflowTooltip"
+					:formatter="row.formatter"
 				>
 				</el-table-column>
 			</template>
@@ -70,6 +107,72 @@
 			>
 			</el-pagination>
 		</div>
+
+		<!-- 搜索 -->
+		<el-dialog title="搜索" width="40%" :visible.sync="searchDialog">
+			<el-form :model="searchForm">
+				<slot name="searchSlot"></slot>
+			</el-form>
+			<div slot="footer" class="dialog-footer">
+				<el-button
+					icon="el-icon-close"
+					:size="buttonSize"
+					:loading="loading"
+					:disabled="disabled"
+					@click="searchDialog = false"
+				>
+					取消
+				</el-button>
+				<el-button
+					type="info"
+					icon="el-icon-refresh"
+					:size="buttonSize"
+					:loading="loading"
+					:disabled="disabled"
+					@click="resetSearchData('searchForm')"
+				>
+					重置
+				</el-button>
+				<el-button
+					type="primary"
+					icon="el-icon-check"
+					:size="buttonSize"
+					:loading="loading"
+					:disabled="disabled"
+					@click="searchData"
+				>
+					确 定
+				</el-button>
+			</div>
+		</el-dialog>
+
+		<!-- 新增/修改 -->
+		<el-dialog title="新增/修改" width="40%" :visible.sync="saveDialog">
+			<el-form :model="saveForm" :rules="saveRules" ref="saveForm">
+				<slot name="saveSlot"></slot>
+			</el-form>
+			<div slot="footer" class="dialog-footer">
+				<el-button
+					icon="el-icon-close"
+					:size="buttonSize"
+					:loading="loading"
+					:disabled="disabled"
+					@click="saveDialog = false"
+				>
+					取消
+				</el-button>
+				<el-button
+					type="primary"
+					icon="el-icon-check"
+					:size="buttonSize"
+					:loading="loading"
+					:disabled="disabled"
+					@click="saveData('saveForm')"
+				>
+					确 定
+				</el-button>
+			</div>
+		</el-dialog>
 	</div>
 </template>
 
@@ -84,11 +187,17 @@
 <script scoped>
 export default {
 	name: "Table",
-	props: ["tableData"],
+	props: ["tableData", "searchForm", "saveForm", "saveRules"],
 	components: {},
 	data() {
 		return {
-			multipleTable: null,
+			loading: false,
+			disabled: false,
+			onlyIcon: false, // 是否只显示按钮图标
+			buttonSize: process.env.VUE_APP_BUTTON_SIZE,
+			searchDialog: false, // 显示/隐藏 搜索弹出框
+			saveDialog: false, // 显示/隐藏 编辑弹出框
+			selectedData: null, // 选中的数据
 			defHead: {
 				headerAlign: "center",
 				showOverflowTooltip: true //是否隐藏多余内容
@@ -96,6 +205,7 @@ export default {
 			defaultTableData: {
 				primaryField: "", // 数据的主键字段名称
 				getListApi: null,
+				saveApi: null,
 				deleteApi: null,
 				params: {},
 				//需要显示的工具按钮
@@ -119,7 +229,20 @@ export default {
 			}
 		};
 	},
-	computed: {},
+	computed: {
+		searchText() {
+			return this.onlyIcon ? "" : "搜索";
+		},
+		addText() {
+			return this.onlyIcon ? "" : "新增";
+		},
+		editText() {
+			return this.onlyIcon ? "" : "修改";
+		},
+		deleteText() {
+			return this.onlyIcon ? "" : "删除";
+		}
+	},
 	methods: {
 		handleSizeChange(val) {
 			let self = this;
@@ -134,15 +257,12 @@ export default {
 		},
 		handleRowClick(val) {
 			// 选中一行
-			this.multipleTable = val;
+			this.selectedData = val;
 		},
 		deleteData() {
 			let self = this;
-			if (!this.multipleTable) {
-				self.$message({
-					type: "warning",
-					message: "请选中一行数据"
-				});
+			if (!this.selectedData) {
+				self.$mes.warning("请选中一行数据");
 				return;
 			}
 
@@ -152,10 +272,12 @@ export default {
 				type: "danger"
 			})
 				.then(() => {
+					self.loading = true;
 					self.$mes.deleteLoadOpen();
 					self.defaultTableData
-						.deleteApi(self.multipleTable)
+						.deleteApi(self.selectedData)
 						.then(rs => {
+							self.loading = false;
 							self.$mes.loadClose(rs);
 							if (rs.error == 0) {
 								//如果当前页面只有一条数据且删除成功，页数减一
@@ -173,6 +295,7 @@ export default {
 							}
 						})
 						.catch(function(err) {
+							self.loading = false;
 							self.$mes.loadClose(err);
 							self.$emit("deleteError", err);
 						});
@@ -188,13 +311,21 @@ export default {
 				if (!params) {
 					params = {};
 				}
+				params = Object.assign(
+					[],
+					params,
+					self.searchForm
+				);
 				params.page = self.defaultTableData.currentPage;
 				params.rows = self.defaultTableData.pageSize;
 
+				console.log(params);
 				self.$mes.queryLoadOpen();
+				self.loading = true;
 				self.defaultTableData
 					.getListApi(params)
 					.then(rs => {
+						self.loading = false;
 						self.$mes.loadClose();
 						if (rs.error == 0) {
 							self.reLoad({ data: rs.data, total: rs.total });
@@ -204,9 +335,76 @@ export default {
 						}
 					})
 					.catch(function(err) {
+						self.loading = false;
 						self.$mes.loadClose();
 						self.$emit("loadError", err);
 					});
+			}
+		},
+		resetSearchData(formName) {
+			this.searchDialog = false;
+			this.$refs[formName].resetFields();
+			this.loadData();
+//			this.searchForm.searchKey = "";
+		},
+		searchData() {
+			this.searchDialog = false;
+			this.loadData();
+//			this.searchForm.searchKey = "";
+		},
+		saveShow(isAdd){
+			let self = this;
+			self.saveDialog = true;
+			// 重置表单
+			if(!isAdd){
+				if (!this.selectedData) {
+					self.$mes.warning("请选中一行数据");
+					return;
+				}
+				for(let name in self.saveForm){
+					self.saveForm[name] = self.selectedData[name];
+				}
+//				self.saveForm = self.selectedData;
+			}else{
+				for(let name in self.saveForm){
+					self.saveForm[name] = "";
+				}
+			}
+		},
+		saveData(formName) {
+			let self = this;
+			let state = true;
+			self.$refs[formName].validate((valid) => {
+				if (!valid) {
+					state = false;
+					return state;
+				}
+			});
+			if (state) {
+				console.log(self.saveForm);
+				self.loading = true;
+				self.$mes.deleteLoadOpen();
+				self.defaultTableData
+					.saveApi(self.saveForm)
+					.then(rs => {
+						self.loading = false;
+						self.$mes.loadClose(rs);
+						if (rs.error == 0) {
+							self.saveDialog = false;
+							// 加载数据
+							self.loadData(self);
+							self.$emit("saveSuccess", rs);
+						} else {
+							self.$emit("saveError", rs);
+						}
+					})
+					.catch(function(err) {
+						self.loading = false;
+						self.$mes.loadClose(err);
+						self.$emit("saveError", err);
+					});
+			}else{
+				self.$mes.warning("请检查表单内容！");
 			}
 		},
 		reLoad(obj) {
@@ -230,6 +428,9 @@ export default {
 						this.defaultTableData.head[i]
 					);
 				}
+			}
+			if(this.tableData.onlyIcon){
+				this.onlyIcon = this.tableData.onlyIcon;
 			}
 			self.loadData();
 		}

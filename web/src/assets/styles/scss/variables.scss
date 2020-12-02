@@ -5,9 +5,9 @@ $Color:blue;
 // 最底层背景色
 $BackgroundColor: #f2f2f2;
 
-// 边框颜色
-$BorderColor: #dcdfe6;
-// 边框颜色
+// 边框
+$Border: 1px solid #dcdfe6;
+
 $BorderRadius: 2px;
 
 $FontSize: 14px;
@@ -19,7 +19,7 @@ $MenuBackgroundColor: #11193c;
 $Padding: 10px;
 
 .xie-panel{
-	border: 1px solid $BorderColor;
+	border: $Border;
 	background-color: #fff;
 	border-radius: $BorderRadius;
 	padding: $Padding;

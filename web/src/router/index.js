@@ -8,7 +8,9 @@ const routes = [
 	{
 		path: "/",
 		name: "Home",
-		component: Home
+		// component: Home
+		meta: { title: "应用管理" },
+		component: () => import("@core/menuurl/index.vue")
 	},
 	{
 		path: "/about",

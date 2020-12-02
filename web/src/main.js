@@ -10,6 +10,7 @@ import "element-ui/lib/theme-chalk/index.css";
 import "@styles/theme/index.css";
 import * as api from "@utils/request/api";
 import message from "@utils/message/index";
+import Tool from "@utils/tool";
 
 Vue.use(Element);
 
@@ -17,6 +18,7 @@ Vue.use(Element);
 Vue.prototype.$src = process.env.VUE_APP_PUBLIC_PATH;
 Vue.prototype.$api = api;
 Vue.prototype.$mes = message;
+Vue.prototype.$tool = Tool;
 
 Vue.config.productionTip = false;
 

@@ -5,18 +5,15 @@ import Qs from "qs";
 // 进行一些全局配置
 // 公共路由(网络请求地址)
 Axios.defaults.baseURL = "/api";
-// 请求响应超时时间
-Axios.defaults.timeout = 5000;
+// 请求响应超时时间 20秒
+Axios.defaults.timeout = 20 * 1000;
 
 // 封装自己的get/post方法
 export default {
-	get: function(path = "", data = {}) {
+	get: function(path = "", data = {}, config = {}) {
 		return new Promise(function(resolve, reject) {
-			Axios.get(path, {
-				params: data
-			})
+			Axios.get(path, {params: data}, config)
 				.then(function(response) {
-					// 按需求来，这里我需要的是response.data，所以返回response.data，一般直接返回response
 					resolve(response.data);
 				})
 				.catch(function(error) {
@@ -24,9 +21,9 @@ export default {
 				});
 		});
 	},
-	post: function(path = "", data = {}) {
+	post: function(path = "", data = {}, config = {}) {
 		return new Promise(function(resolve, reject) {
-			Axios.post(path, Qs.stringify(data))
+			Axios.post(path, Qs.stringify(data), config)
 				.then(function(response) {
 					resolve(response.data);
 				})
